@@ -1,26 +1,37 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class AIController : MonoBehaviour
 {
     private static readonly int isBeingHit = Animator.StringToHash("isBeingHit");
     private static readonly int HitIndex = Animator.StringToHash("HitIndex");
     private static readonly int isDead = Animator.StringToHash("isDead");
+    private static readonly int Speed = Animator.StringToHash("Speed");
 
     public Transform player;
     public int health = 20; 
     private Animator animator;
+    private NavMeshAgent agent;
     
     public bool IsDead { get; private set; } = false;
     
     void Start()
     {
         animator = GetComponent<Animator>();
+        agent = GetComponent<NavMeshAgent>();
     }
 
     private void Update()
     {
-        LookAtPlayer();
+        if (!IsDead && player != null)
+        {
+            LookAtPlayer();
+            agent.SetDestination(player.position); 
+            var speed = agent.velocity.magnitude; 
+            animator.SetFloat(Speed, speed); 
+        }
+        
     }
 
     private void LookAtPlayer()
