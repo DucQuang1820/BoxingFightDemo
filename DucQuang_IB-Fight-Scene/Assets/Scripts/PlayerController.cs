@@ -18,8 +18,10 @@ public class PlayerController : MonoBehaviour
     private float smoothSpeed = 1f;
     private float moveSpeed = 2f;
     private float rotateSpeed = 10f;
-
+    
     private bool isInRange = false;
+    
+    private Collider lastEnemyHit;
     private Coroutine punchRoutine;
 
     private void FixedUpdate()
@@ -48,6 +50,7 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Enemy") && punchRoutine == null)
         {
+            lastEnemyHit = other.collider;
             isInRange = true;
             punchRoutine = StartCoroutine(PunchLoop());
         }
@@ -64,32 +67,41 @@ public class PlayerController : MonoBehaviour
                 StopCoroutine(punchRoutine);
                 punchRoutine = null;
                 animator.SetBool(IsPunch, false);
+                if (other.collider == lastEnemyHit)
+                    lastEnemyHit = null;
             }
         }
     }
 
     private IEnumerator PunchLoop()
     {
-        while (isInRange)
+        while (isInRange && lastEnemyHit != null)
         {
+            AIController ai = lastEnemyHit.GetComponent<AIController>();
+            if (ai == null || ai.IsDead)
+            {
+                animator.SetBool(IsPunch, false);
+                punchRoutine = null;
+                yield break; 
+            }
+
             float index = Random.Range(0, 4);
             animator.SetBool(IsPunch, true);
             animator.SetTrigger(IsInRange);
             animator.SetFloat(PunchIndex, index);
-            
             yield return new WaitForSeconds(2.2f); 
         }
     }
     
-    public void HitEnemy()
+    public void HitEnemy(string type)
     {
-        // if (lastEnemyHit != null)
-        // {
-        //     AIController ai = lastEnemyHit.GetComponent<AIController>();
-        //     if (ai != null)
-        //     {
-        //         ai.PlayHitReaction();
-        //     }
-        // }
+        if (lastEnemyHit != null)
+        {
+            AIController ai = lastEnemyHit.GetComponent<AIController>();
+            if (ai != null)
+            {
+                ai.PlayHitReaction(type);
+            }
+        }
     }
 }
