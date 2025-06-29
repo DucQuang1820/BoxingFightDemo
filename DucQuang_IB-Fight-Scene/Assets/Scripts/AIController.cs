@@ -4,18 +4,26 @@ using UnityEngine.AI;
 
 public class AIController : MonoBehaviour
 {
-    private static readonly int isBeingHit = Animator.StringToHash("isBeingHit");
+    private static readonly int IsBeingHit = Animator.StringToHash("isBeingHit");
     private static readonly int HitIndex = Animator.StringToHash("HitIndex");
-    private static readonly int isDead = Animator.StringToHash("isDead");
+    private static readonly int IsKO = Animator.StringToHash("isKO");
     private static readonly int Speed = Animator.StringToHash("Speed");
+    private static readonly int IsPunch = Animator.StringToHash("isPunch");
+    private static readonly int IsInRange = Animator.StringToHash("isInRange");
+    private static readonly int PunchIndex = Animator.StringToHash("PunchIndex");
 
     public Transform player;
-    public int health = 20; 
+    public int health = 20;
+
     private Animator animator;
     private NavMeshAgent agent;
-    
+
+    private bool isInRange = false;
+    private Coroutine punchRoutine;
+    private Collider lastEnemyHit;
+
     public bool IsDead { get; private set; } = false;
-    
+
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -24,38 +32,38 @@ public class AIController : MonoBehaviour
 
     private void Update()
     {
-        if (!IsDead && player != null)
-        {
-            LookAtPlayer();
-            agent.SetDestination(player.position); 
-            var speed = agent.velocity.magnitude; 
-            animator.SetFloat(Speed, speed); 
-        }
-        
+        if (IsDead || player == null) return;
+
+        agent.SetDestination(player.position);
+
+        float speed = agent.velocity.magnitude;
+        animator.SetFloat(Speed, speed);
+
+        LookAtPlayer();
     }
 
     private void LookAtPlayer()
     {
-        if (player != null)
-        {
-            Vector3 direction = (player.position - transform.position).normalized;
-            Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f); 
-        }
+        if (player == null) return;
+
+        Vector3 direction = (player.position - transform.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
     }
 
     public void PlayHitReaction(string type = "", int damage = 10)
     {
-        if (health <= 0) return; 
+        if (IsDead) return;
 
-        health -= damage; 
+        health -= damage;
         if (health <= 0)
         {
             Die();
             return;
         }
 
-        animator.SetBool(isBeingHit, true);
+        animator.SetBool(IsBeingHit, true);
+
         switch (type)
         {
             case "head":
@@ -71,27 +79,95 @@ public class AIController : MonoBehaviour
                 animator.SetFloat(HitIndex, 0);
                 break;
         }
+
         StartCoroutine(ResetHit());
     }
 
     private IEnumerator ResetHit()
     {
         yield return new WaitForSeconds(0.2f);
-        animator.SetBool(isBeingHit, false);
+        animator.SetBool(IsBeingHit, false);
     }
 
     private void Die()
     {
-        animator.SetTrigger("isKO"); 
+        IsDead = true;
+
+        if (punchRoutine != null)
+        {
+            StopCoroutine(punchRoutine);
+            punchRoutine = null;
+        }
+
+        animator.SetBool(IsPunch, false);
+        animator.SetBool(IsBeingHit, false);
+        animator.SetBool(IsInRange, false);
+        animator.SetTrigger(IsKO);  
+
+        agent.enabled = false;
+
         var coll = GetComponent<Collider>();
         var rb = GetComponent<Rigidbody>();
-        if (coll != null)
-        {
-            coll.enabled = false;
-            rb.isKinematic = true; 
-        }
-        IsDead = true;
-        enabled = false;
 
+        if (coll != null) coll.enabled = false;
+        if (rb != null) rb.isKinematic = true;
+
+        enabled = false; 
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (IsDead) return;
+
+        if (other.gameObject.CompareTag("Player") && punchRoutine == null)
+        {
+            lastEnemyHit = other.collider;
+            isInRange = true;
+            punchRoutine = StartCoroutine(PunchLoop());
+        }
+    }
+
+    private void OnCollisionExit(Collision other)
+    {
+         if (other.gameObject.CompareTag("Player"))
+        {
+            isInRange = false;
+
+            if (punchRoutine != null)
+            {
+                StopCoroutine(punchRoutine);
+                punchRoutine = null;
+                animator.SetBool(IsPunch, false);
+                if (other.collider == lastEnemyHit)
+                    lastEnemyHit = null;
+            }
+        }
+    }
+
+    private IEnumerator PunchLoop()
+    {
+        while (isInRange && lastEnemyHit != null && !IsDead)
+        {
+            float index = Random.Range(0, 4);
+            animator.SetFloat(PunchIndex, index);
+            animator.SetBool(IsPunch, true);
+            animator.SetTrigger(IsInRange);
+
+            yield return new WaitForSeconds(1.2f);
+        }
+
+        animator.SetBool(IsPunch, false);
+    }
+
+    public void HitEnemy(string type)
+    {
+        if (lastEnemyHit != null)
+        {
+            PlayerController pl = lastEnemyHit.GetComponent<PlayerController>();
+            if (pl != null)
+            {
+                pl.PlayHitReaction(type);
+            }
+        }
     }
 }
