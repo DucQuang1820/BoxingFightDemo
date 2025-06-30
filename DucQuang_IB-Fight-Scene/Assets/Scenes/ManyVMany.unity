@@ -533,6 +533,8 @@ MonoBehaviour:
   health: 100
   hpText: {fileID: 87635558}
   animator: {fileID: 481641796}
+  attackRange: 1
+  isAlly: 1
 --- !u!1 &531155504
 GameObject:
   m_ObjectHideFlags: 0
@@ -679,6 +681,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 7421653487955196459, guid: 775cd3b427d63974d8703d8fc87cc3ce, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7905174323926392977, guid: 775cd3b427d63974d8703d8fc87cc3ce, type: 3}
       propertyPath: m_RootOrder
       value: 11
@@ -786,6 +792,8 @@ MonoBehaviour:
   health: 100
   hpText: {fileID: 180487777}
   animator: {fileID: 574602698}
+  attackRange: 1
+  isAlly: 0
 --- !u!1 &615425712
 GameObject:
   m_ObjectHideFlags: 0
@@ -1471,6 +1479,8 @@ MonoBehaviour:
   health: 200
   hpText: {fileID: 1644444557}
   animator: {fileID: 1353571353}
+  attackRange: 1
+  isAlly: 0
 --- !u!195 &1353571350
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -2739,6 +2749,10 @@ PrefabInstance:
     - target: {fileID: 7421653487955196459, guid: 775cd3b427d63974d8703d8fc87cc3ce, type: 3}
       propertyPath: m_Name
       value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 7421653487955196459, guid: 775cd3b427d63974d8703d8fc87cc3ce, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7905174323926392977, guid: 775cd3b427d63974d8703d8fc87cc3ce, type: 3}
       propertyPath: m_RootOrder

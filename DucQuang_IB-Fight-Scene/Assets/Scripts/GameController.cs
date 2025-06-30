@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -28,6 +27,7 @@ public class GameController : MonoBehaviour
 
     public List<AIController> aiControllers = new List<AIController>();
     public List<PlayerController> playerControllers = new List<PlayerController>();
+
     private bool gameEnded = false; 
     
     private void Awake()
