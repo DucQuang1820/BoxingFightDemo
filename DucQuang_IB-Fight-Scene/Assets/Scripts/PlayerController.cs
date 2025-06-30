@@ -69,11 +69,13 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
+        if (IsDead) return;
+
         if (other.gameObject.CompareTag("Enemy") && punchRoutine == null)
         {
-            // lastEnemyHit = other.collider;
-            // isInRange = true;
-            // punchRoutine = StartCoroutine(PunchLoop());
+            lastEnemyHit = other.collider;
+            isInRange = true;
+            punchRoutine = StartCoroutine(PunchLoop());
         }
     }
 
@@ -96,7 +98,7 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator PunchLoop()
     {
-        while (isInRange && lastEnemyHit != null)
+        while (isInRange && lastEnemyHit != null  && !IsDead)
         {
             AIController ai = lastEnemyHit.GetComponent<AIController>();
             if (ai == null || ai.IsDead)
@@ -135,7 +137,8 @@ public class PlayerController : MonoBehaviour
         
         if (currentHealth <= 0)
         {
-            GameOver();
+            IsDead = true;
+            GameController.Instance.TriggerGameOver();
             return;
         }
 
@@ -160,9 +163,5 @@ public class PlayerController : MonoBehaviour
         animator.SetBool(IsBeingHit, false);
         moveSpeed = normalMoveSpeed;
     }
-
-    private void GameOver(){
-        animator.SetTrigger(IsKO);
-        gameOver.SetActive(true);
-    }
+    
 }

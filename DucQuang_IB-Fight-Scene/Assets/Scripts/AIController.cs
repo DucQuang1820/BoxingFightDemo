@@ -15,7 +15,7 @@ public class AIController : MonoBehaviour
     public Transform player;
     public int health = 20;
 
-    private Animator animator;
+    public Animator animator;
     private NavMeshAgent agent;
 
     private bool isInRange = false;
@@ -34,10 +34,16 @@ public class AIController : MonoBehaviour
     {
         if (IsDead || player == null) return;
 
+        PlayerController playerController = player.GetComponent<PlayerController>();
+        if (playerController != null && playerController.IsDead)
+        {
+            agent.isStopped = true; 
+            animator.SetFloat(Speed, 0f); 
+            return;
+        }
+        
         agent.SetDestination(player.position);
-
-        float speed = agent.velocity.magnitude;
-        animator.SetFloat(Speed, speed);
+        animator.SetFloat(Speed, agent.velocity.magnitude);
 
         LookAtPlayer();
     }
@@ -98,7 +104,7 @@ public class AIController : MonoBehaviour
             StopCoroutine(punchRoutine);
             punchRoutine = null;
         }
-
+        GameController.Instance.TriggerGameWin();
         animator.SetBool(IsPunch, false);
         animator.SetBool(IsBeingHit, false);
         animator.SetBool(IsInRange, false);
@@ -129,7 +135,7 @@ public class AIController : MonoBehaviour
 
     private void OnCollisionExit(Collision other)
     {
-         if (other.gameObject.CompareTag("Player"))
+        if (other.gameObject.CompareTag("Player"))
         {
             isInRange = false;
 
@@ -148,6 +154,14 @@ public class AIController : MonoBehaviour
     {
         while (isInRange && lastEnemyHit != null && !IsDead)
         {
+            PlayerController playerController = lastEnemyHit.GetComponent<PlayerController>();
+            if (playerController != null && playerController.IsDead)
+            {
+                animator.SetBool(IsPunch, false);
+                punchRoutine = null;
+                yield break; 
+            }
+
             float index = Random.Range(0, 4);
             animator.SetFloat(PunchIndex, index);
             animator.SetBool(IsPunch, true);
@@ -158,7 +172,6 @@ public class AIController : MonoBehaviour
 
         animator.SetBool(IsPunch, false);
     }
-
     public void HitEnemy(string type)
     {
         if (lastEnemyHit != null)
