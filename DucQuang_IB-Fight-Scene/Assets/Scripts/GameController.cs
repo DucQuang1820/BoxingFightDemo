@@ -27,6 +27,8 @@ public class GameController : MonoBehaviour
 
     public List<AIController> aiControllers = new List<AIController>();
     public List<PlayerController> playerControllers = new List<PlayerController>();
+    public List<AllyAIController> allyAIController = new List<AllyAIController>();
+
 
     private bool gameEnded = false; 
     
@@ -60,8 +62,10 @@ public class GameController : MonoBehaviour
     {
         aiControllers.Clear();
         playerControllers.Clear();
+        allyAIController.Clear();
         aiControllers.AddRange(FindObjectsOfType<AIController>());
         playerControllers.AddRange(FindObjectsOfType<PlayerController>());
+        allyAIController.AddRange(FindObjectsOfType<AllyAIController>());
     }
 
     private IEnumerator StartCountdown()
@@ -89,6 +93,11 @@ public class GameController : MonoBehaviour
         {
             player.enabled = true; 
         }
+
+        foreach (var al in allyAIController)
+        {
+            al.enabled = true; 
+        }
     }
 
     private void DisableGameplay()
@@ -101,6 +110,11 @@ public class GameController : MonoBehaviour
         foreach (var player in playerControllers)
         {
             player.enabled = false; 
+        }
+
+        foreach (var al in allyAIController)
+        {
+            al.enabled = false; 
         }
     }
 
@@ -165,10 +179,21 @@ public class GameController : MonoBehaviour
                 break;
 
             case GameMode.MulVMul:
-                
+                bool allPlayersDead = playerControllers.All(p => p == null || p.IsDead);
+                bool allAlliesDead = allyAIController.All(a => a == null || a.IsDead);
+                bool allEnemiesDead = aiControllers.All(ai => ai == null || ai.IsDead);
+
+                if (allPlayersDead && allAlliesDead)
+                {
+                    gameEnded = true;
+                    TriggerGameOver();
+                }
+                else if (allEnemiesDead)
+                {
+                    gameEnded = true;
+                    TriggerGameWin();
+                }
                 break;
-            default:
-                throw new ArgumentOutOfRangeException();
         }
     }
     

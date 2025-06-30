@@ -541,11 +541,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caff3503a3b8ff94f87f5e63fe2e6d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 2062127356}
   health: 100
   hpText: {fileID: 87635558}
   animator: {fileID: 481641796}
   attackRange: 1
+  currentTarget: {fileID: 0}
 --- !u!1 &561381391
 GameObject:
   m_ObjectHideFlags: 0
@@ -787,11 +787,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caff3503a3b8ff94f87f5e63fe2e6d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 2062127356}
   health: 100
   hpText: {fileID: 180487777}
   animator: {fileID: 574602698}
   attackRange: 1
+  currentTarget: {fileID: 0}
 --- !u!1 &615425712
 GameObject:
   m_ObjectHideFlags: 0
@@ -1444,6 +1444,14 @@ PrefabInstance:
     - target: {fileID: 2702401161120898629, guid: 854b05d92e30255418ed4a05039d1561, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
+      objectReference: {fileID: 1542344931}
+    - target: {fileID: 2702401161120898629, guid: 854b05d92e30255418ed4a05039d1561, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Retry
+      objectReference: {fileID: 0}
+    - target: {fileID: 2702401161120898629, guid: 854b05d92e30255418ed4a05039d1561, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: GameController, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 2702401161120898650, guid: 854b05d92e30255418ed4a05039d1561, type: 3}
       propertyPath: m_SizeDelta.x
@@ -1461,6 +1469,11 @@ PrefabInstance:
 --- !u!224 &1057772377 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2702401160089659168, guid: 854b05d92e30255418ed4a05039d1561, type: 3}
+  m_PrefabInstance: {fileID: 1057772376}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1057772378 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2702401160089659169, guid: 854b05d92e30255418ed4a05039d1561, type: 3}
   m_PrefabInstance: {fileID: 1057772376}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1100884869
@@ -1556,11 +1569,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caff3503a3b8ff94f87f5e63fe2e6d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 2062127356}
   health: 200
   hpText: {fileID: 1644444557}
   animator: {fileID: 1353571353}
   attackRange: 1
+  currentTarget: {fileID: 0}
 --- !u!195 &1353571350
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1978,6 +1991,14 @@ PrefabInstance:
     - target: {fileID: 571047165019247579, guid: 3165e1b0267bc9b4487f5bbdb62f41c2, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
+      objectReference: {fileID: 1542344931}
+    - target: {fileID: 571047165019247579, guid: 3165e1b0267bc9b4487f5bbdb62f41c2, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Retry
+      objectReference: {fileID: 0}
+    - target: {fileID: 571047165019247579, guid: 3165e1b0267bc9b4487f5bbdb62f41c2, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: GameController, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 571047165041138853, guid: 3165e1b0267bc9b4487f5bbdb62f41c2, type: 3}
       propertyPath: m_fontSize
@@ -1995,6 +2016,11 @@ PrefabInstance:
 --- !u!224 &1476228598 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 571047163572096327, guid: 3165e1b0267bc9b4487f5bbdb62f41c2, type: 3}
+  m_PrefabInstance: {fileID: 1476228597}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1476228599 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 571047163572096320, guid: 3165e1b0267bc9b4487f5bbdb62f41c2, type: 3}
   m_PrefabInstance: {fileID: 1476228597}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1490110621
@@ -2079,13 +2105,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4909cd8168a173c4da4fea6413ec7cf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameOverUI: {fileID: 0}
-  gameWinUI: {fileID: 0}
-  countdownUI: {fileID: 0}
-  countdownText: {fileID: 0}
+  gameOverUI: {fileID: 1476228599}
+  gameWinUI: {fileID: 1057772378}
+  countdownUI: {fileID: 1813426189}
+  countdownText: {fileID: 1813426188}
   gameMode: 1
   aiControllers: []
   playerControllers: []
+  allyAIController: []
 --- !u!4 &1542344932
 Transform:
   m_ObjectHideFlags: 0
@@ -2543,6 +2570,22 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2702401160089659168, guid: 854b05d92e30255418ed4a05039d1561, type: 3}
   m_PrefabInstance: {fileID: 1813426186}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1813426188 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2702401161816621241, guid: 854b05d92e30255418ed4a05039d1561, type: 3}
+  m_PrefabInstance: {fileID: 1813426186}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &1813426189 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2702401160089659169, guid: 854b05d92e30255418ed4a05039d1561, type: 3}
+  m_PrefabInstance: {fileID: 1813426186}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1928380015
 GameObject:
   m_ObjectHideFlags: 0
@@ -2759,6 +2802,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2929252283123773938, guid: aaa2c939c0359ac4dbce3f49e8b90252, type: 3}
   m_PrefabInstance: {fileID: 1939701515}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1939701517 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2929252283123773951, guid: aaa2c939c0359ac4dbce3f49e8b90252, type: 3}
+  m_PrefabInstance: {fileID: 1939701515}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45977bbae16431c46a013576a1aea384, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1998132995
 GameObject:
   m_ObjectHideFlags: 0
@@ -2837,11 +2891,6 @@ CanvasRenderer:
 --- !u!1 &2062127354 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2122972254015428975, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
-  m_PrefabInstance: {fileID: 7949929901953549093}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &2062127356 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1602578504781251541, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
   m_PrefabInstance: {fileID: 7949929901953549093}
   m_PrefabAsset: {fileID: 0}
 --- !u!136 &2062127360
@@ -3122,15 +3171,15 @@ PrefabInstance:
     - target: {fileID: 2062127357, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
       propertyPath: gameOver
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1476228599}
     - target: {fileID: 2062127357, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
       propertyPath: hpSlider
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 561381393}
     - target: {fileID: 2062127357, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
       propertyPath: joystick
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1939701517}
     - target: {fileID: 2062127357, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
       propertyPath: maxHealth
       value: 100

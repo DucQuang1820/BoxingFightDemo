@@ -1,4 +1,4 @@
-using System.Collections;
+ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,7 +20,6 @@ public class PlayerController : MonoBehaviour
     public Vector3 offset;
     public Rigidbody rb;
     public Slider hpSlider;
-    public GameObject gameOver;
 
     private float smoothSpeed = 1f;
     private float normalMoveSpeed = 2f;
