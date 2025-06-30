@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -14,15 +15,17 @@ public class AIController : MonoBehaviour
 
     public Transform player;
     public int health = 20;
+    public TextMeshProUGUI hpText;
 
     public Animator animator;
     private NavMeshAgent agent;
 
     private bool isInRange = false;
     private Coroutine punchRoutine;
-    private Collider lastEnemyHit;
 
     public bool IsDead { get; private set; } = false;
+
+    public float attackRange = 1f;
 
     void Start()
     {
@@ -37,15 +40,39 @@ public class AIController : MonoBehaviour
         PlayerController playerController = player.GetComponent<PlayerController>();
         if (playerController != null && playerController.IsDead)
         {
-            agent.isStopped = true; 
-            animator.SetFloat(Speed, 0f); 
+            agent.isStopped = true;
+            animator.SetFloat(Speed, 0f);
             return;
         }
-        
+
         agent.SetDestination(player.position);
         animator.SetFloat(Speed, agent.velocity.magnitude);
-
+        hpText.text = $"{health}";
         LookAtPlayer();
+
+        // Check if player is within attack range
+        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        if (distanceToPlayer <= attackRange)
+        {
+            if (!isInRange)
+            {
+                isInRange = true;
+                if (punchRoutine == null)
+                {
+                    punchRoutine = StartCoroutine(PunchLoop());
+                }
+            }
+        }
+        else
+        {
+            isInRange = false;
+            if (punchRoutine != null)
+            {
+                StopCoroutine(punchRoutine);
+                punchRoutine = null;
+                animator.SetBool(IsPunch, false);
+            }
+        }
     }
 
     private void LookAtPlayer()
@@ -55,6 +82,30 @@ public class AIController : MonoBehaviour
         Vector3 direction = (player.position - transform.position).normalized;
         Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+    }
+
+    private IEnumerator PunchLoop()
+    {
+        while (isInRange && !IsDead)
+        {
+            PlayerController playerController = player.GetComponent<PlayerController>();
+            if (playerController != null && playerController.IsDead)
+            {
+                animator.SetBool(IsPunch, false);
+                punchRoutine = null;
+                yield break;
+            }
+
+            // Trigger punch animation
+            float index = Random.Range(0, 4);
+            animator.SetFloat(PunchIndex, index);
+            animator.SetBool(IsPunch, true);
+            animator.SetTrigger(IsInRange);
+            var randTime = Random.Range(1.2f, 2.5f);
+            yield return new WaitForSeconds(randTime); 
+        }
+
+        animator.SetBool(IsPunch, false);
     }
 
     public void PlayHitReaction(string type = "", int damage = 10)
@@ -104,83 +155,27 @@ public class AIController : MonoBehaviour
             StopCoroutine(punchRoutine);
             punchRoutine = null;
         }
-        GameController.Instance.TriggerGameWin();
         animator.SetBool(IsPunch, false);
         animator.SetBool(IsBeingHit, false);
         animator.SetBool(IsInRange, false);
-        animator.SetTrigger(IsKO);  
+        animator.SetTrigger(IsKO);
 
         agent.enabled = false;
-
+        hpText.text = "";
         var coll = GetComponent<Collider>();
         var rb = GetComponent<Rigidbody>();
 
         if (coll != null) coll.enabled = false;
         if (rb != null) rb.isKinematic = true;
-
-        enabled = false; 
+        enabled = false;
     }
-
-    private void OnCollisionEnter(Collision other)
-    {
-        if (IsDead) return;
-
-        if (other.gameObject.CompareTag("Player") && punchRoutine == null)
-        {
-            lastEnemyHit = other.collider;
-            isInRange = true;
-            punchRoutine = StartCoroutine(PunchLoop());
-        }
-    }
-
-    private void OnCollisionExit(Collision other)
-    {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            isInRange = false;
-
-            if (punchRoutine != null)
-            {
-                StopCoroutine(punchRoutine);
-                punchRoutine = null;
-                animator.SetBool(IsPunch, false);
-                if (other.collider == lastEnemyHit)
-                    lastEnemyHit = null;
-            }
-        }
-    }
-
-    private IEnumerator PunchLoop()
-    {
-        while (isInRange && lastEnemyHit != null && !IsDead)
-        {
-            PlayerController playerController = lastEnemyHit.GetComponent<PlayerController>();
-            if (playerController != null && playerController.IsDead)
-            {
-                animator.SetBool(IsPunch, false);
-                punchRoutine = null;
-                yield break; 
-            }
-
-            float index = Random.Range(0, 4);
-            animator.SetFloat(PunchIndex, index);
-            animator.SetBool(IsPunch, true);
-            animator.SetTrigger(IsInRange);
-
-            yield return new WaitForSeconds(1.2f);
-        }
-
-        animator.SetBool(IsPunch, false);
-    }
+    
     public void HitEnemy(string type)
     {
-        if (lastEnemyHit != null)
+        var playerController = player.GetComponent<PlayerController>();
+        if (playerController != null)
         {
-            PlayerController pl = lastEnemyHit.GetComponent<PlayerController>();
-            if (pl != null)
-            {
-                pl.PlayHitReaction(type);
-            }
+            playerController.PlayHitReaction(type);
         }
     }
 }

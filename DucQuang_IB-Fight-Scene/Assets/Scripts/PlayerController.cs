@@ -138,7 +138,6 @@ public class PlayerController : MonoBehaviour
         if (currentHealth <= 0)
         {
             IsDead = true;
-            GameController.Instance.TriggerGameOver();
             return;
         }
 
